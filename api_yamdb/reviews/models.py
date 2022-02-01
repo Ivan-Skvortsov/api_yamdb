@@ -19,7 +19,7 @@ class Genre(models.Model):
         verbose_name_plural = 'Жанры'
 
 
-class Categorie(models.Model):
+class Category(models.Model):
     name = models.CharField(
         max_length=256,
         verbose_name='Название категории'
@@ -60,7 +60,7 @@ class Title(models.Model):
         verbose_name='Жанр'
     )
     category = models.ForeignKey(
-        Categorie,
+        Category,
         on_delete=models.SET_NULL,
         null=True,
         related_name='titles',
