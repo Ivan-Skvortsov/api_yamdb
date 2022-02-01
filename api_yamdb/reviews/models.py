@@ -1,3 +1,5 @@
+import textwrap as tw
+
 from django.db import models
 
 
@@ -87,7 +89,7 @@ class Review(models.Model):
         Title,
         on_delete=models.CASCADE,
         related_name="reviews",
-        verbose_name='Произведение'
+        verbose_name='Произведение',
     )
     text = models.TextField(
         max_length=1000,
@@ -108,7 +110,7 @@ class Review(models.Model):
         verbose_name_plural = 'Отзывы'
 
     def __str__(self):
-        return self.text
+        return tw.shorten(self.text, 15, placeholder='...')
 
 
 class Comment(models.Model):
@@ -116,13 +118,13 @@ class Comment(models.Model):
         CustomUser,
         on_delete=models.CASCADE,
         related_name="comments",
-        verbose_name='Автор'
+        verbose_name='Автор',
     )
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
         related_name='comments',
-        verbose_name='Отзыв'
+        verbose_name='Отзыв',
     )
     text = models.TextField(
         max_length=1000,
@@ -139,4 +141,4 @@ class Comment(models.Model):
         verbose_name_plural = 'Комментарии'
 
     def __str__(self):
-        return self.text
+        return tw.shorten(self.text, 15, placeholder='...')
