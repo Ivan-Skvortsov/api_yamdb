@@ -1,3 +1,36 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-# Create your views here.
+from reviews.models import Title, Review
+from .serializers import ReviewSerializer, CommentSerializer
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    serializer_class = ReviewSerializer
+    # TODO add custom permissions
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        title = get_object_or_404(Title, id=self.kwargs["title_id"])
+        new_queryset = title.reviews.all()
+        return new_queryset
+
+    def perform_create(self, serializer):
+        title = get_object_or_404(Title, id=self.kwargs["title_id"])
+        serializer.save(author=self.request.user, title=title)
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    # TODO add custom permissions
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        review = get_object_or_404(Review, id=self.kwargs["review_id"])
+        new_queryset = review.comments.all()
+        return new_queryset
+
+    def perform_create(self, serializer):
+        review = get_object_or_404(Review, id=self.kwargs["review_id"])
+        serializer.save(author=self.request.user, review=review)
