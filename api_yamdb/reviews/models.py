@@ -87,6 +87,7 @@ class Review(models.Model):
         Title,
         on_delete=models.CASCADE,
         related_name="reviews",
+        verbose_name='Произведение'
     )
     text = models.TextField(
         max_length=1000,
@@ -102,6 +103,10 @@ class Review(models.Model):
         verbose_name='Дата добавления',
     )
 
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
+
     def __str__(self):
         return self.text
 
@@ -111,12 +116,13 @@ class Comment(models.Model):
         CustomUser,
         on_delete=models.CASCADE,
         related_name="comments",
+        verbose_name='Автор'
     )
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
         related_name='comments',
-        verbose_name='Отзыв',
+        verbose_name='Отзыв'
     )
     text = models.TextField(
         max_length=1000,
@@ -127,6 +133,10 @@ class Comment(models.Model):
         db_index=True,
         verbose_name='Дата добавления',
     )
+
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
 
     def __str__(self):
         return self.text
