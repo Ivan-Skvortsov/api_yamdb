@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Genres(models.Model):
+class Genre(models.Model):
     name = models.CharField(
         max_length=256,
         verbose_name='Название жанра'
@@ -19,7 +19,7 @@ class Genres(models.Model):
         verbose_name_plural = 'Жанры'
 
 
-class Categories(models.Model):
+class Categorie(models.Model):
     name = models.CharField(
         max_length=256,
         verbose_name='Название категории'
@@ -38,7 +38,7 @@ class Categories(models.Model):
         verbose_name_plural = 'Категории'
 
 
-class Titles(models.Model):
+class Title(models.Model):
     name = models.CharField(
         max_length=256,
         verbose_name='Название произведения'
@@ -55,12 +55,12 @@ class Titles(models.Model):
         verbose_name='Описание'
     )
     genre = models.ManyToManyField(
-        Genres,
+        Genre,
         related_name='titles',
         verbose_name='Жанр'
     )
     category = models.ForeignKey(
-        Categories,
+        Categorie,
         on_delete=models.SET_NULL,
         null=True,
         related_name='titles',
