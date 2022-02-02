@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from users.models import CustomUser
 
+
 class UsersSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -11,3 +12,11 @@ class UsersSerializer(serializers.ModelSerializer):
             'email', 'role',
         )
         model = CustomUser
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    pass
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    pass
