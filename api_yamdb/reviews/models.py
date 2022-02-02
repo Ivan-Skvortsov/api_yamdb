@@ -88,7 +88,6 @@ class Review(models.Model):
         related_name="reviews",
         verbose_name='Автор',
     )
-
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
