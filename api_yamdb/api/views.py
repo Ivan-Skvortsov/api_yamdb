@@ -1,15 +1,17 @@
-from rest_framework import viewsets, filters
-from rest_framework.response import Response
+from rest_framework import filters, mixins, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.generics import get_object_or_404
-from rest_framework import mixins
-
-
-from reviews.models import Title, Review, Genre, Category, Title
-from .serializers import ReviewSerializer, CommentSerializer, UsersSerializer, GenreSerializer, CategorySerializer, TitleSerializer
-from .permissions import IsAdmin, IsAdminOrReadOnly
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
+from reviews.models import Category, Genre, Review, Title
 from users.models import CustomUser
+
+from .permissions import IsAdmin, IsAdminOrReadOnly
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, ReviewSerializer, TitleSerializer,
+                          UsersSerializer)
+import api.filters as custom_filters
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -86,3 +88,10 @@ class CategoryViewSet(mixins.ListModelMixin,
     filter_backends = [filters.SearchFilter, ]
     search_fields = ['name', ]
     lookup_field = 'slug'
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+    permission_classes = [IsAdminOrReadOnly, ]
+    filter_class = custom_filters.TitleFilter
