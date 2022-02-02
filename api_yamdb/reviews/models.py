@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 
 
-User = get_user_model()
+CustomUser = get_user_model()
 
 
 class Genre(models.Model):
@@ -83,7 +83,7 @@ class Title(models.Model):
 
 class Review(models.Model):
     author = models.ForeignKey(
-        User,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name="reviews",
         verbose_name='Автор',
@@ -118,7 +118,7 @@ class Review(models.Model):
 
 class Comment(models.Model):
     author = models.ForeignKey(
-        User,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name="comments",
         verbose_name='Автор',
