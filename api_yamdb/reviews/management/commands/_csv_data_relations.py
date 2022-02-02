@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from reviews.models import Genre, Title, Category, Review, Comment
+from reviews.models import Genre, Title, Category#, Review, Comment
 
 
 User = get_user_model()
@@ -10,6 +10,6 @@ csv_data_relation = (
     {'model': Title, 'filename': 'titles.csv'},
     {'model': Title.genre.through, 'filename': 'genre_title.csv'},
     {'model': User, 'filename': 'users.csv'},
-    {'model': Review, 'filename': 'review.csv'},
-    {'model': Comment, 'filename': 'comments.csv'}
+    # {'model': Review, 'filename': 'review.csv'},
+    # {'model': Comment, 'filename': 'comments.csv'}
 )
