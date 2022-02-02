@@ -1,3 +1,5 @@
+import textwrap as tw
+
 from django.db import models
 
 
@@ -73,3 +75,70 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
+
+
+class Review(models.Model):
+    author = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="reviews",
+        verbose_name='Автор',
+    )
+
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        related_name="reviews",
+        verbose_name='Произведение',
+    )
+    text = models.TextField(
+        max_length=1000,
+        verbose_name='Текст отзыва',
+    )
+    score = models.PositiveSmallIntegerField(
+        max_length=2,
+        verbose_name='Оценка',
+    )
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        db_index=True,
+        verbose_name='Дата добавления',
+    )
+
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
+
+    def __str__(self):
+        return tw.shorten(self.text, 15, placeholder='...')
+
+
+class Comment(models.Model):
+    author = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="comments",
+        verbose_name='Автор',
+    )
+    review = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Отзыв',
+    )
+    text = models.TextField(
+        max_length=1000,
+        verbose_name='Текст комментария',
+    )
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        db_index=True,
+        verbose_name='Дата добавления',
+    )
+
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
+
+    def __str__(self):
+        return tw.shorten(self.text, 15, placeholder='...')
