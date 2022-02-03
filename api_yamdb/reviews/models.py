@@ -1,6 +1,10 @@
 import textwrap as tw
 
 from django.db import models
+from django.contrib.auth import get_user_model
+
+
+CustomUser = get_user_model()
 
 
 class Genre(models.Model):
@@ -84,7 +88,6 @@ class Review(models.Model):
         related_name="reviews",
         verbose_name='Автор',
     )
-
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
