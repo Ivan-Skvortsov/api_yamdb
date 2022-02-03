@@ -9,8 +9,8 @@ from users.models import CustomUser
 
 from .permissions import IsAdmin, IsAdminOrReadOnly
 from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ReviewSerializer, TitleSerializer,
-                          UsersSerializer)
+                          GenreSerializer, ReviewSerializer, TitleReadSerializer,
+                          TitleWriteSerializer, UsersSerializer)
 import api.filters as custom_filters
 
 
@@ -92,6 +92,10 @@ class CategoryViewSet(mixins.ListModelMixin,
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    serializer_class = TitleSerializer
     permission_classes = [IsAdminOrReadOnly, ]
     filter_class = custom_filters.TitleFilter
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TitleReadSerializer
+        return TitleWriteSerializer
