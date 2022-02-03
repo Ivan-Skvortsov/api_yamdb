@@ -9,7 +9,7 @@ CustomUser = get_user_model()
 
 class Genre(models.Model):
     name = models.CharField(
-        max_length=256, 
+        max_length=256,
         verbose_name='Название жанра'
     )
     slug = models.SlugField(
@@ -58,7 +58,9 @@ class Title(models.Model):
         blank=True
     )
     description = models.TextField(
-        verbose_name='Описание'
+        verbose_name='Описание',
+        null=True,
+        blank=True
     )
     genre = models.ManyToManyField(
         Genre,
