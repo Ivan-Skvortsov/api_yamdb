@@ -83,7 +83,7 @@ class Title(models.Model):
 
 class Review(models.Model):
     author = models.ForeignKey(
-        User,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name="reviews",
         verbose_name='Автор',
@@ -118,7 +118,7 @@ class Review(models.Model):
 
 class Comment(models.Model):
     author = models.ForeignKey(
-        User,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name="comments",
         verbose_name='Автор',
