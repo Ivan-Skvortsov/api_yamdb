@@ -7,10 +7,11 @@ from rest_framework.response import Response
 from reviews.models import Category, Genre, Review, Title
 from users.models import CustomUser
 
-from .permissions import IsAdmin, IsAdminOrReadOnly
-from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ReviewSerializer, TitleReadSerializer,
-                          TitleWriteSerializer, UsersSerializer)
+from api.permissions import IsAdmin, IsAdminOrReadOnly
+from api.serializers import (CategorySerializer, CommentSerializer,
+                             GenreSerializer, ReviewSerializer,
+                             TitleReadSerializer, TitleWriteSerializer,
+                             UsersSerializer)
 import api.filters as custom_filters
 
 
