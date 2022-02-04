@@ -1,9 +1,11 @@
-from rest_framework import filters, mixins, viewsets
-from rest_framework.decorators import action
+from rest_framework import filters, mixins, viewsets, status
+from rest_framework.decorators import action, api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
 from reviews.models import Category, Genre, Review, Title
 from users.models import CustomUser
 
@@ -11,8 +13,36 @@ from api.permissions import IsAdmin, IsAdminOrReadOnly
 from api.serializers import (CategorySerializer, CommentSerializer,
                              GenreSerializer, ReviewSerializer,
                              TitleReadSerializer, TitleWriteSerializer,
-                             UsersSerializer)
+                             UsersSerializer, SendEmailSerializer,
+                             )
 import api.filters as custom_filters
+
+
+@api_view(["POST"])
+def send_email(request):
+    try:
+        serializer = SendEmailSerializer(data=request.data)
+        email = request.data.get('email')
+        if serializer.is_valid():
+            user = CustomUser.objects.create(email=email)
+            user.save
+            confirmation_code = default_token_generator.make_token(user)
+            send_mail(
+                'Код подтверждения Yamdb',
+                f'Ваш код подтверждения: {confirmation_code}',
+                'admin@yamdb.ru',
+                [email]
+            )
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK
+            )
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    except Exception:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserViewSet(viewsets.ModelViewSet):

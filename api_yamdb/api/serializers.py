@@ -5,7 +5,6 @@ from users.models import CustomUser
 
 
 class UsersSerializer(serializers.ModelSerializer):
-
     class Meta:
         fields = (
             'first_name', 'last_name',
@@ -13,6 +12,17 @@ class UsersSerializer(serializers.ModelSerializer):
             'email', 'role',
         )
         model = CustomUser
+
+
+class SendEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    username = serializers.CharField(max_length=25, required=True)
+
+    def validate(self, data):
+        username = data['username']
+        if len(username) <= 2:
+            raise serializers.ValidationError('Короткое имя польозвателя')
+        return data
 
 
 class ReviewSerializer(serializers.ModelSerializer):
