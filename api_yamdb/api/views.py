@@ -1,21 +1,24 @@
-from rest_framework import filters, mixins, viewsets, status
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+
+
+from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
-from django.core.mail import send_mail
-from django.contrib.auth.tokens import default_token_generator
+from rest_framework_simplejwt.tokens import AccessToken
+
 from reviews.models import Category, Genre, Review, Title
 from users.models import CustomUser
-
+import api.filters as custom_filters
 from api.permissions import IsAdmin, IsAdminOrReadOnly
 from api.serializers import (CategorySerializer, CommentSerializer,
-                             GenreSerializer, ReviewSerializer,
+                             ConfirmationCodeSerializer, GenreSerializer,
+                             ReviewSerializer, SendEmailSerializer,
                              TitleReadSerializer, TitleWriteSerializer,
-                             UsersSerializer, SendEmailSerializer,
-                             )
-import api.filters as custom_filters
+                             UsersSerializer)
 
 
 @api_view(["POST"])
@@ -24,8 +27,10 @@ def send_email(request):
         serializer = SendEmailSerializer(data=request.data)
         email = request.data.get('email')
         if serializer.is_valid():
-            user = CustomUser.objects.create(email=email)
-            user.save
+            user = CustomUser.objects.create(
+                email=email,
+                username=request.data.get('username'))
+            user.save()
             confirmation_code = default_token_generator.make_token(user)
             send_mail(
                 'Код подтверждения Yamdb',
@@ -45,6 +50,22 @@ def send_email(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(["POST"])
+def check_token(request):
+    serializer = ConfirmationCodeSerializer(data=request.data)
+    if serializer.is_valid():
+        confirmation_code = serializer.data.get('confirmation_code')
+        username = serializer.data.get('username')
+        user = get_object_or_404(CustomUser, username=username)
+        if default_token_generator.check_token(user, confirmation_code):
+            jwt_token = AccessToken.for_user(user)
+            return Response(
+                f'Access Token: {str(jwt_token)}',
+                status=status.HTTP_200_OK
+            )
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UsersSerializer
     permission_classes = (IsAuthenticated, IsAdmin,)
@@ -53,10 +74,11 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     search_fields = ('username',)
 
-    @action(detail=False, methods=('get', 'patch',),
-            url_path='me', url_name='me',
-            permission_classes=(IsAuthenticated,)
-            )
+    @action(
+        detail=False, methods=('get', 'patch',),
+        url_path='me', url_name='me',
+        permission_classes=(IsAuthenticated,)
+    )
     def get_me(self, request):
         instance = self.request.user
         serializer = self.get_serializer(instance)

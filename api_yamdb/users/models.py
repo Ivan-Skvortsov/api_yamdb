@@ -5,6 +5,9 @@ from django.db import models
 class CustomUser(AbstractUser):
     """Custom user model."""
 
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
     ROLES = [
         ('user', 'user'),
         ('moderator', 'moderator'),
@@ -16,7 +19,6 @@ class CustomUser(AbstractUser):
         max_length=50,
         verbose_name='Роль пользователя',
         default='user',
-
     )
     email = models.EmailField(
         verbose_name='Email',

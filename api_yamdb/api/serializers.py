@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from reviews.models import Category, Genre, Title
 
+from reviews.models import Category, Genre, Title
 from users.models import CustomUser
 
 
@@ -23,6 +23,11 @@ class SendEmailSerializer(serializers.Serializer):
         if len(username) <= 2:
             raise serializers.ValidationError('Короткое имя польозвателя')
         return data
+
+
+class ConfirmationCodeSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=25, required=True)
+    confirmation_code = serializers.CharField(required=True)
 
 
 class ReviewSerializer(serializers.ModelSerializer):
