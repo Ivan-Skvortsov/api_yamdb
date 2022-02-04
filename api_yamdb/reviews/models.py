@@ -89,13 +89,13 @@ class Review(models.Model):
     author = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
-        related_name="reviews",
+        related_name='reviews',
         verbose_name='Автор',
     )
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        related_name="reviews",
+        related_name='reviews',
         verbose_name='Произведение',
     )
     text = models.TextField(
@@ -124,7 +124,7 @@ class Comment(models.Model):
     author = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
-        related_name="comments",
+        related_name='comments',
         verbose_name='Автор',
     )
     review = models.ForeignKey(
