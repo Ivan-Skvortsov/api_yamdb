@@ -50,7 +50,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     )
     title = serializers.HiddenField(
         default=FromContext(
-            lambda context: context['request'].parser_context['kwargs']['title_id'])
+            lambda context: context['request'].parser_context['kwargs']['title_id'])  # noqa: E501
     )
 
     class Meta:
