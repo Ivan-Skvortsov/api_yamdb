@@ -15,7 +15,6 @@ class FromContext(object):
 
 
 class UsersSerializer(serializers.ModelSerializer):
-
     class Meta:
         fields = (
             'first_name', 'last_name',
@@ -23,6 +22,24 @@ class UsersSerializer(serializers.ModelSerializer):
             'email', 'role',
         )
         model = CustomUser
+
+
+class CreateUserSerializer(serializers.ModelSerializer):
+
+    def validate(self, data):
+        username = data['username']
+        if len(username) <= 2:
+            raise serializers.ValidationError('Короткое имя пользователя')
+        return data
+
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'username')
+
+
+class ConfirmationCodeSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=25, required=True)
+    confirmation_code = serializers.CharField(required=True)
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -38,7 +55,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = ('pk', 'text', 'author', 'score', 'pub_date', 'title')
+        fields = ('id', 'text', 'author', 'score', 'pub_date', 'title')
         read_only_fields = ('author', 'title')
         validators = [
             serializers.UniqueTogetherValidator(
@@ -63,7 +80,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('pk', 'text', 'author', 'pub_date')
+        fields = ('idgit ', 'text', 'author', 'pub_date')
         read_only_fields = ('author',)
 
 
