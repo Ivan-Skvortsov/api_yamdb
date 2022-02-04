@@ -112,6 +112,7 @@ class Review(models.Model):
     )
 
     class Meta:
+        ordering = ['id']
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
         constraints = [
@@ -148,6 +149,7 @@ class Comment(models.Model):
     )
 
     class Meta:
+        ordering = ['id']
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
 
