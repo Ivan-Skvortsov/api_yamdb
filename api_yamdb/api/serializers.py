@@ -14,13 +14,12 @@ class UsersSerializer(serializers.ModelSerializer):
         model = CustomUser
 
 
-class SendEmailSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(max_length=25, required=True)
+class CreateUserSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         username = data['username']
         if len(username) <= 2:
-            raise serializers.ValidationError('Короткое имя польозвателя')
+            raise serializers.ValidationError('Короткое имя пользователя')
         return data
 
     class Meta:

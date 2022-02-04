@@ -27,3 +27,6 @@ class CustomUser(AbstractUser):
         help_text='Напиши что-нибудь о себе',
         null=True
     )
+
+    class Meta:
+        ordering = ['id']
