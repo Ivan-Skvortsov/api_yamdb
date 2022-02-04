@@ -102,8 +102,7 @@ class Review(models.Model):
         max_length=1000,
         verbose_name='Текст отзыва',
     )
-    score = models.PositiveSmallIntegerField(
-        max_length=2,
+    score = models.IntegerField(
         verbose_name='Оценка',
     )
     pub_date = models.DateTimeField(
@@ -115,6 +114,11 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'title'], name='unique_review'
+            )
+        ]
 
     def __str__(self):
         return tw.shorten(self.text, 15, placeholder='...')
