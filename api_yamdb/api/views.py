@@ -1,19 +1,19 @@
-from rest_framework import filters, mixins, viewsets
-from rest_framework.decorators import action
-from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
-from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination
-from reviews.models import Category, Genre, Review, Title
-from users.models import CustomUser
-
-from api.permissions import IsAdmin, IsAdminOrReadOnly
+import api.filters as custom_filters
+from api.permissions import (IsAdmin, IsAdminOrReadOnly,
+                             IsAuthorOrModeratorOrAdminOrReadOnly)
 from api.serializers import (CategorySerializer, CommentSerializer,
                              GenreSerializer, ReviewSerializer,
                              TitleReadSerializer, TitleWriteSerializer,
                              UsersSerializer)
-import api.filters as custom_filters
+from rest_framework import filters, mixins, viewsets
+from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
+from reviews.models import Category, Genre, Review, Title
+from users.models import CustomUser
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -42,7 +42,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAdmin]
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsAuthorOrModeratorOrAdminOrReadOnly)
     pagination_class = PageNumberPagination
 
     def get_queryset(self):
@@ -56,7 +57,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAdmin]
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsAuthorOrModeratorOrAdminOrReadOnly)
     pagination_class = PageNumberPagination
 
     def get_queryset(self):
