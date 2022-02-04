@@ -1,8 +1,10 @@
 import csv
 from pathlib import Path
-from tqdm import tqdm
+
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+
+from tqdm import tqdm
 
 from ._csv_data_relations import csv_data_relation
 

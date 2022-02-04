@@ -1,11 +1,10 @@
 from rest_framework import serializers
-from reviews.models import Category, Genre, Title
 
+from reviews.models import Category, Genre, Title
 from users.models import CustomUser
 
 
 class UsersSerializer(serializers.ModelSerializer):
-
     class Meta:
         fields = (
             'first_name', 'last_name',
@@ -13,6 +12,24 @@ class UsersSerializer(serializers.ModelSerializer):
             'email', 'role',
         )
         model = CustomUser
+
+
+class CreateUserSerializer(serializers.ModelSerializer):
+
+    def validate(self, data):
+        username = data['username']
+        if len(username) <= 2:
+            raise serializers.ValidationError('Короткое имя пользователя')
+        return data
+
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'username')
+
+
+class ConfirmationCodeSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=25, required=True)
+    confirmation_code = serializers.CharField(required=True)
 
 
 class ReviewSerializer(serializers.ModelSerializer):

@@ -16,7 +16,6 @@ class CustomUser(AbstractUser):
         max_length=50,
         verbose_name='Роль пользователя',
         default='user',
-
     )
     email = models.EmailField(
         verbose_name='Email',
@@ -29,3 +28,5 @@ class CustomUser(AbstractUser):
         null=True
     )
 
+    class Meta:
+        ordering = ['id']
