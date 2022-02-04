@@ -149,7 +149,7 @@ class CategoryViewSet(mixins.ListModelMixin,
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     permission_classes = [IsAdminOrReadOnly, ]
-    filter_class = custom_filters.TitleFilter
+    filterset_class = custom_filters.TitleFilter
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
