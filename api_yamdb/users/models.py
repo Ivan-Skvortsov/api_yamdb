@@ -5,9 +5,6 @@ from django.db import models
 class CustomUser(AbstractUser):
     """Custom user model."""
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
-
     ROLES = [
         ('user', 'user'),
         ('moderator', 'moderator'),
