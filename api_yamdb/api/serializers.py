@@ -80,7 +80,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('idgit ', 'text', 'author', 'pub_date')
+        fields = ('id', 'text', 'author', 'pub_date')
         read_only_fields = ('author',)
 
 
