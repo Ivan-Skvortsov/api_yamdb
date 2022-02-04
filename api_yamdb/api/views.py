@@ -1,14 +1,16 @@
-from rest_framework import viewsets, filters
-from rest_framework.response import Response
+from rest_framework import filters, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.generics import get_object_or_404
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
 
-
-from reviews.models import Title, Review
-from .serializers import ReviewSerializer, CommentSerializer, UsersSerializer
-from .permissions import IsAdmin
+from reviews.models import Review, Title
 from users.models import CustomUser
+
+from .permissions import IsAdmin
+from .serializers import CommentSerializer, ReviewSerializer, UsersSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -37,8 +39,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    # TODO add custom permissions
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAdmin]
+    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs["title_id"])
@@ -51,8 +53,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    # TODO add custom permissions
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAdmin]
+    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         review = get_object_or_404(Review, id=self.kwargs["review_id"])
