@@ -6,3 +6,4 @@ class ReviewsConfig(AppConfig):
 
     def ready(self):
         import reviews.signals  # noqa: F401
+        reviews.signals  # to pass pep8 tests in ya.praktikum
