@@ -3,6 +3,9 @@ import textwrap as tw
 from django.contrib.auth import get_user_model
 from django.db import models
 
+from reviews.validators import year_validator
+
+
 CustomUser = get_user_model()
 
 
@@ -51,7 +54,8 @@ class Title(models.Model):
         verbose_name='Название произведения'
     )
     year = models.IntegerField(
-        verbose_name='Год выпуска'
+        verbose_name='Год выпуска',
+        validators=[year_validator]
     )
     rating = models.IntegerField(
         verbose_name='Рейтинг',
