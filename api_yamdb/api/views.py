@@ -22,50 +22,44 @@ from api.serializers import (CategorySerializer, CommentSerializer,
                              GenreSerializer, ReviewSerializer,
                              TitleReadSerializer, TitleWriteSerializer,
                              UsersSerializer)
+from api_yamdb.settings import DEFAULT_FROM_EMAIL
 
 
 class CreateUserView(APIView):
     def post(self, request):
         serializer = CreateUserSerializer(data=request.data)
-        if serializer.is_valid():
-            email = serializer.validated_data.get('email')
-            username = serializer.validated_data.get('username')
-            user, _ = CustomUser.objects.get_or_create(
-                email=email,
-                username=username
-            )
-            confirmation_code = default_token_generator.make_token(user)
-            send_mail(
-                'Код подтверждения Yamdb',
-                f'Ваш код подтверждения: {confirmation_code}',
-                'admin@yamdb.ru',
-                [email]
-            )
-            return Response(
-                serializer.data,
-                status=status.HTTP_200_OK
-            )
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data.get('email')
+        username = serializer.validated_data.get('username')
+        user, _ = CustomUser.objects.get_or_create(
+            username=username,
+            defaults={'email': email}
         )
+        confirmation_code = default_token_generator.make_token(user)
+        send_mail(
+            'Код подтверждения Yamdb',
+            f'Ваш код подтверждения: {confirmation_code}',
+            DEFAULT_FROM_EMAIL,
+            [email]
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CheckTokenView(APIView):
     def post(self, request):
         serializer = ConfirmationCodeSerializer(data=request.data)
-        if serializer.is_valid():
-            confirmation_code = serializer.validated_data.get(
-                'confirmation_code'
+        serializer.is_valid(raise_exception=True)
+        confirmation_code = serializer.validated_data.get(
+            'confirmation_code'
+        )
+        username = serializer.validated_data.get('username')
+        user = get_object_or_404(CustomUser, username=username)
+        if default_token_generator.check_token(user, confirmation_code):
+            jwt_token = AccessToken.for_user(user)
+            return Response(
+                f'Access Token: {str(jwt_token)}',
+                status=status.HTTP_200_OK
             )
-            username = serializer.validated_data.get('username')
-            user = get_object_or_404(CustomUser, username=username)
-            if default_token_generator.check_token(user, confirmation_code):
-                jwt_token = AccessToken.for_user(user)
-                return Response(
-                    f'Access Token: {str(jwt_token)}',
-                    status=status.HTTP_200_OK
-                )
         return Response(
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
@@ -87,13 +81,13 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def get_me(self, request):
         instance = self.request.user
-        serializer = self.get_serializer(instance)
         if request.method == 'PATCH':
-            serializer = self.get_serializer(
+            serializer = UsersSerializer(
                 instance, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save(role=instance.role)
                 return Response(serializer.data)
+        serializer = UsersSerializer(instance)
         return Response(serializer.data)
 
 

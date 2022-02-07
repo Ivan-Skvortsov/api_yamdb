@@ -17,8 +17,21 @@ class CustomUser(AbstractUser):
         verbose_name='Роль пользователя',
         default='user',
     )
+    username = models.CharField(
+        max_length=150,
+        unique=True
+    )
+    first_name = models.CharField(
+        max_length=150,
+        blank=True
+    )
+    last_name = models.CharField(
+        max_length=150,
+        blank=True
+    )
     email = models.EmailField(
         verbose_name='Email',
+        max_length=254,
         help_text='Введите адрес электронной почты',
         unique=True
     )
@@ -27,6 +40,14 @@ class CustomUser(AbstractUser):
         help_text='Напиши что-нибудь о себе',
         null=True
     )
+
+    @property
+    def is_admin(self):
+        return self.role == 'admin'
+
+    @property
+    def is_moderator(self):
+        return self.role == 'moderator'
 
     class Meta:
         ordering = ['id']
