@@ -24,7 +24,9 @@ class UsersSerializer(serializers.ModelSerializer):
         model = CustomUser
 
 
-class CreateUserSerializer(serializers.ModelSerializer):
+class CreateUserSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=150, required=True)
+    email = serializers.CharField(max_length=254, required=True)
 
     def validate(self, data):
         username = data['username']
@@ -32,13 +34,9 @@ class CreateUserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Короткое имя пользователя')
         return data
 
-    class Meta:
-        model = CustomUser
-        fields = ('email', 'username')
-
 
 class ConfirmationCodeSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=25, required=True)
+    username = serializers.CharField(max_length=150, required=True)
     confirmation_code = serializers.CharField(required=True)
 
 

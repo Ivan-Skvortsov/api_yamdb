@@ -21,54 +21,44 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Genre, Review, Title
 from users.models import CustomUser
+from api_yamdb.settings import DEFAULT_FROM_EMAIL
 
 
 class CreateUserView(APIView):
     def post(self, request):
         serializer = CreateUserSerializer(data=request.data)
-        if serializer.is_valid():
-            email = serializer.validated_data.get('email')
-            username = serializer.validated_data.get('username')
-            user, _ = CustomUser.objects.get_or_create(
-                email=email,
-                username=username
-            )
-            confirmation_code = default_token_generator.make_token(user)
-            send_mail(
-                'Код подтверждения Yamdb',
-                f'Ваш код подтверждения: {confirmation_code}',
-                'admin@yamdb.ru',
-                [email]
-            )
-            return Response(
-                serializer.data,
-                status=status.HTTP_200_OK
-            )
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data.get('email')
+        username = serializer.validated_data.get('username')
+        user, _ = CustomUser.objects.get_or_create(
+            username=username,
+            defaults={'email': email}
         )
+        confirmation_code = default_token_generator.make_token(user)
+        send_mail(
+            'Код подтверждения Yamdb',
+            f'Ваш код подтверждения: {confirmation_code}',
+            DEFAULT_FROM_EMAIL,
+            [email]
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CheckTokenView(APIView):
     def post(self, request):
         serializer = ConfirmationCodeSerializer(data=request.data)
-        if serializer.is_valid():
-            confirmation_code = serializer.validated_data.get(
-                'confirmation_code'
-            )
-            username = serializer.validated_data.get('username')
-            user = get_object_or_404(CustomUser, username=username)
-            if default_token_generator.check_token(user, confirmation_code):
-                jwt_token = AccessToken.for_user(user)
-                return Response(
-                    f'Access Token: {str(jwt_token)}',
-                    status=status.HTTP_200_OK
-                )
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
+        serializer.is_valid(raise_exception=True)
+        confirmation_code = serializer.validated_data.get(
+            'confirmation_code'
         )
+        username = serializer.validated_data.get('username')
+        user = get_object_or_404(CustomUser, username=username)
+        if default_token_generator.check_token(user, confirmation_code):
+            jwt_token = AccessToken.for_user(user)
+            return Response(
+                f'Access Token: {str(jwt_token)}',
+                status=status.HTTP_200_OK
+            )
 
 
 class UserViewSet(viewsets.ModelViewSet):
