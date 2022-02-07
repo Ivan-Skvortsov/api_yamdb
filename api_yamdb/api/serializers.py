@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from reviews.models import Category, Comment, Genre, Review, Title
 from users.models import CustomUser
 
@@ -109,13 +110,22 @@ class TitleReadSerializer(serializers.ModelSerializer):
         )
 
 
+class SlugFieldWithDictRepresentation(serializers.SlugRelatedField):
+
+    def to_representation(self, obj):
+        return {
+            'name': obj.name,
+            'slug': obj.slug
+        }
+
+
 class TitleWriteSerializer(TitleReadSerializer):
-    genre = serializers.SlugRelatedField(
+    genre = SlugFieldWithDictRepresentation(
         slug_field='slug',
         queryset=Genre.objects.all(),
         many=True
     )
-    category = serializers.SlugRelatedField(
+    category = SlugFieldWithDictRepresentation(
         slug_field='slug',
         queryset=Category.objects.all()
     )

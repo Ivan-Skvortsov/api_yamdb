@@ -1,8 +1,20 @@
-
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 
+from rest_framework import filters, mixins, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly,
+                                        SAFE_METHODS)
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import AccessToken
+
 import api.filters as custom_filters
+from reviews.models import Category, Genre, Review, Title
+from users.models import CustomUser
 from api.permissions import (IsAdmin, IsAdminOrReadOnly,
                              IsAuthorOrModeratorOrAdminOrReadOnly)
 from api.serializers import (CategorySerializer, CommentSerializer,
@@ -10,17 +22,6 @@ from api.serializers import (CategorySerializer, CommentSerializer,
                              GenreSerializer, ReviewSerializer,
                              TitleReadSerializer, TitleWriteSerializer,
                              UsersSerializer)
-from rest_framework import filters, mixins, status, viewsets
-from rest_framework.decorators import action
-from rest_framework.generics import get_object_or_404
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import AccessToken
-from reviews.models import Category, Genre, Review, Title
-from users.models import CustomUser
 from api_yamdb.settings import DEFAULT_FROM_EMAIL
 
 
@@ -120,28 +121,24 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, review=review)
 
 
-class GenreViewSet(mixins.ListModelMixin,
-                   mixins.CreateModelMixin,
-                   mixins.DestroyModelMixin,
-                   viewsets.GenericViewSet):
+class AbstractCategoryViewSet(mixins.ListModelMixin,
+                              mixins.CreateModelMixin,
+                              mixins.DestroyModelMixin,
+                              viewsets.GenericViewSet):
+    permission_classes = [IsAdminOrReadOnly, ]
+    filter_backends = [filters.SearchFilter, ]
+    search_fields = ['name', ]
+    lookup_field = 'slug'
+
+
+class GenreViewSet(AbstractCategoryViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [IsAdminOrReadOnly, ]
-    filter_backends = [filters.SearchFilter, ]
-    search_fields = ['name', ]
-    lookup_field = 'slug'
 
 
-class CategoryViewSet(mixins.ListModelMixin,
-                      mixins.CreateModelMixin,
-                      mixins.DestroyModelMixin,
-                      viewsets.GenericViewSet):
+class CategoryViewSet(AbstractCategoryViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrReadOnly, ]
-    filter_backends = [filters.SearchFilter, ]
-    search_fields = ['name', ]
-    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -150,6 +147,6 @@ class TitleViewSet(viewsets.ModelViewSet):
     filterset_class = custom_filters.TitleFilter
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
+        if self.request.method in SAFE_METHODS:
             return TitleReadSerializer
         return TitleWriteSerializer
