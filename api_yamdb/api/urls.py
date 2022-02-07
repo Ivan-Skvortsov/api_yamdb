@@ -9,7 +9,7 @@ from .views import (CategoryViewSet, CheckTokenView, CommentViewSet,
 v1_router = DefaultRouter()
 
 v1_router.register(
-    r'users', UserViewSet,
+    'users', UserViewSet,
     basename='users'
 )
 v1_router.register(

@@ -3,7 +3,7 @@ import textwrap as tw
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from reviews.validators import year_validator
+from reviews.validators import year_validator, score_validator
 
 
 CustomUser = get_user_model()
@@ -108,6 +108,7 @@ class Review(models.Model):
     )
     score = models.IntegerField(
         verbose_name='Оценка',
+        validators=[score_validator]
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
