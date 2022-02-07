@@ -59,6 +59,10 @@ class CheckTokenView(APIView):
                 f'Access Token: {str(jwt_token)}',
                 status=status.HTTP_200_OK
             )
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -76,13 +80,13 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def get_me(self, request):
         instance = self.request.user
-        serializer = self.get_serializer(instance)
         if request.method == 'PATCH':
-            serializer = self.get_serializer(
+            serializer = UsersSerializer(
                 instance, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save(role=instance.role)
                 return Response(serializer.data)
+        serializer = UsersSerializer(instance)
         return Response(serializer.data)
 
 

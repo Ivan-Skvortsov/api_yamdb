@@ -24,15 +24,16 @@ class UsersSerializer(serializers.ModelSerializer):
         model = CustomUser
 
 
-class CreateUserSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=150, required=True)
-    email = serializers.CharField(max_length=254, required=True)
-
+class CreateUserSerializer(serializers.ModelSerializer):
     def validate(self, data):
         username = data['username']
         if len(username) <= 2:
             raise serializers.ValidationError('Короткое имя пользователя')
         return data
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email')
 
 
 class ConfirmationCodeSerializer(serializers.Serializer):
