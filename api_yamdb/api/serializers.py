@@ -26,11 +26,11 @@ class UsersSerializer(serializers.ModelSerializer):
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
-    def validate(self, data):
-        username = data['username']
-        if len(username) <= 2:
+
+    def validate_username(self, value):
+        if len(value) <= 2:
             raise serializers.ValidationError('Короткое имя пользователя')
-        return data
+        return value
 
     class Meta:
         model = CustomUser
