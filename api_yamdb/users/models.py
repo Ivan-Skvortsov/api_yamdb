@@ -2,13 +2,19 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+class UserRole:
+    USER = 'user'
+    MODERATOR = 'moderator'
+    ADMIN = 'admin'
+
+
 class CustomUser(AbstractUser):
     """Custom user model."""
 
     ROLES = [
-        ('user', 'user'),
-        ('moderator', 'moderator'),
-        ('admin', 'admin')
+        (UserRole.USER, 'user'),
+        (UserRole.MODERATOR, 'moderator'),
+        (UserRole.ADMIN, 'admin'),
     ]
 
     role = models.CharField(
@@ -43,11 +49,11 @@ class CustomUser(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.role == 'admin'
+        return self.role == UserRole.ADMIN
 
     @property
     def is_moderator(self):
-        return self.role == 'moderator'
+        return self.role == UserRole.MODERATOR
 
     class Meta:
         ordering = ['id']
