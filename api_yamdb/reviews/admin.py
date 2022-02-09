@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Avg
 
 from reviews.models import Category, Comment, Genre, Review, Title
 
@@ -17,7 +18,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Title)
 class TitleAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'year', 'rating', 'get_genres', 'category')
+    list_display = (
+        'pk', 'name', 'year', 'get_rating', 'get_genres', 'category'
+    )
     search_fields = ('name',)
     list_filter = ('year', 'category')
     list_editable = ('category',)
@@ -26,6 +29,10 @@ class TitleAdmin(admin.ModelAdmin):
 
     def get_genres(self, obj):
         return "/".join([genre.name for genre in obj.genre.all()])
+
+    def get_rating(self, obj):
+        avg_rating = obj.reviews.all().aggregate(Avg('score'))['score__avg']
+        return int(avg_rating) if avg_rating else None
 
 
 @admin.register(Review)
