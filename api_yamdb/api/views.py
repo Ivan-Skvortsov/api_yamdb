@@ -21,7 +21,7 @@ from api.serializers import (CategorySerializer, CommentSerializer,
                              ConfirmationCodeSerializer, CreateUserSerializer,
                              GenreSerializer, ReviewSerializer,
                              TitleReadSerializer, TitleWriteSerializer,
-                             UsersSerializer)
+                             UserSerializer)
 from api_yamdb.settings import DEFAULT_FROM_EMAIL
 
 
@@ -67,7 +67,7 @@ class CheckTokenView(APIView):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    serializer_class = UsersSerializer
+    serializer_class = UserSerializer
     permission_classes = (IsAuthenticated, IsAdmin,)
     filter_backends = (filters.SearchFilter,)
     lookup_field = 'username'
@@ -82,12 +82,12 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_me(self, request):
         instance = self.request.user
         if request.method == 'PATCH':
-            serializer = UsersSerializer(
+            serializer = UserSerializer(
                 instance, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save(role=instance.role)
                 return Response(serializer.data)
-        serializer = UsersSerializer(instance)
+        serializer = UserSerializer(instance)
         return Response(serializer.data)
 
 
