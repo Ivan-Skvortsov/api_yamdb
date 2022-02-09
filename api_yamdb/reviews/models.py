@@ -57,11 +57,6 @@ class Title(models.Model):
         verbose_name='Год выпуска',
         validators=[year_validator]
     )
-    rating = models.IntegerField(
-        verbose_name='Рейтинг',
-        null=True,
-        blank=True
-    )
     description = models.TextField(
         verbose_name='Описание',
         null=True,
