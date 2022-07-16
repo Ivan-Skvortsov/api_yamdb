@@ -8,11 +8,11 @@
   <p>
     Авторы:
     <br />
-    <a href="https://github.com/Creepy-Panda">Vladislav Nosikov</a>
+    <a href="https://github.com/Ivan-Skvortsov">Ivan-Skvortsov</a>
      ·
     <a href="https://github.com/DD477">d.dobrodeev</a>
      ·
-    <a href="https://github.com/Ivan-Skvortsov">Ivan-Skvortsov</a>
+    <a href="https://github.com/Creepy-Panda">Vladislav Nosikov</a>
   </p>
 </div>
 
